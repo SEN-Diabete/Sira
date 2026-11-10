@@ -1,1 +1,226 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Sira - Ta compagne diabète</title>
+    <style>
+        :root { 
+            --bg: #FCFAF8; --primary: #7A5C9D; --alert: #D9383E; 
+            --blue: #4A5A9B; --text: #2C2C2C; --accent: #F4A261; --soft: #F0EAE6;
+        }
+        * { box-sizing: border-box; font-family: system-ui, -apple-system, Arial, sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--text); text-align: center; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
+        
+        /* --- SIRA ET SES ANIMATIONS --- */
+        .avatar-wrapper { position: relative; margin-bottom: 20px; width: 200px; height: 220px; display: flex; justify-content: center; align-items: center; z-index: 2; }
+        
+        /* Suppression du mix-blend-mode car vos images ont un fond transparent */
+        .sira-media { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s, opacity 0.3s; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.1)); }
+        
+        .sira-media.repos { animation: float 3s ease-in-out infinite; }
+        .sira-media.parlant { animation: talk 0.5s ease-in-out infinite alternate; }
+        
+        /* --- LA BULLE DE BD --- */
+        .speech-bubble-bd { 
+            background: white; padding: 20px; border-radius: 20px; position: relative; 
+            max-width: 340px; font-size: 1.1rem; line-height: 1.5;
+            border: 3px solid var(--text); box-shadow: 4px 4px 0px var(--primary);
+            margin-bottom: 25px; display: none; z-index: 1;
+        }
+        .speech-bubble-bd::after { content: ''; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); border-width: 0 15px 20px 15px; border-style: solid; border-color: transparent transparent var(--text) transparent; }
+        .speech-bubble-bd::before { content: ''; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); border-width: 0 13px 17px 13px; border-style: solid; border-color: transparent transparent white transparent; z-index: 2; }
+        .speech-bubble-bd.active { display: block; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        
+        .bubble-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
+        .bubble-text { font-weight: bold; color: var(--text); }
 
+        /* --- MENU DES ACTIONS --- */
+        .menu { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 12px; z-index: 0; }
+        .btn-action {
+            background: white; border: 2px solid var(--text); padding: 15px 20px; border-radius: 16px;
+            font-size: 1rem; font-weight: bold; color: var(--text); cursor: pointer;
+            display: flex; align-items: center; gap: 15px; text-align: left; transition: all 0.1s;
+            box-shadow: 3px 3px 0px var(--text);
+        }
+        .btn-action:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px var(--text); }
+        .btn-action .icon { font-size: 1.5rem; background: var(--soft); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+
+        .btn-hypo { border-color: var(--alert); box-shadow: 3px 3px 0px var(--alert); }
+        .btn-hyper { border-color: var(--blue); box-shadow: 3px 3px 0px var(--blue); }
+
+        /* --- ÉCRANS DE DÉTAILS --- */
+        .screen { display: none; background: white; padding: 25px; border-radius: 24px; border: 3px solid var(--text); box-shadow: 6px 6px 0px var(--primary); text-align: left; width: 100%; max-width: 400px; position: absolute; top: 20px; z-index: 10; }
+        .screen.active { display: block; animation: slideUp 0.3s ease-out; }
+        .screen h2 { font-size: 1.5rem; margin-top: 0; text-align: center; color: var(--primary); text-transform: uppercase;}
+        .step { display: flex; align-items: flex-start; margin-bottom: 15px; background: var(--soft); padding: 15px; border-radius: 12px; font-size: 1rem; line-height: 1.4; color: var(--text); border: 1px solid #ddd; }
+        .step span { font-size: 1.2rem; font-weight: bold; margin-right: 15px; color: white; background: var(--primary); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        
+        /* CHRONO */
+        .timer-box { text-align: center; margin: 20px 0; background: #fff; padding: 20px; border-radius: 16px; border: 2px dashed var(--alert); }
+        .timer { font-size: 3.5rem; font-weight: 900; color: var(--alert); margin: 10px 0; font-variant-numeric: tabular-nums; }
+        .timer.finished { color: var(--blue); animation: pulse 1s infinite; }
+        .btn-start { background: var(--primary); color: white; border: 2px solid var(--text); padding: 15px; border-radius: 12px; width: 100%; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 3px 3px 0px var(--text); }
+        .btn-start:active { transform: translate(3px,3px); box-shadow: none; }
+        
+        .btn-close { background: white; color: var(--text); border: 2px solid var(--text); padding: 15px; border-radius: 12px; width: 100%; font-size: 1rem; margin-top: 15px; font-weight: bold; cursor: pointer; box-shadow: 3px 3px 0px var(--text); }
+        .btn-close:active { transform: translate(3px,3px); box-shadow: none; }
+
+        /* --- ANIMATIONS CSS --- */
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        @keyframes talk { 0% { transform: scale(1) rotate(-1deg); } 100% { transform: scale(1.03) rotate(1deg); } }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.8) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <!-- L'IMAGE DE SIRA (à la racine) -->
+    <div class="avatar-wrapper">
+        <img src="sira.png" alt="Sira" class="sira-media repos" id="siraImg">
+    </div>
+
+    <!-- LA BULLE DE BD -->
+    <div class="speech-bubble-bd active" id="siraBubble">
+        <span class="bubble-icon" id="bubbleIcon">👋🏾</span>
+        <span class="bubble-text" id="bubbleText">Bonjour ! Je suis Sira. Comment puis-je t'aider aujourd'hui ?</span>
+    </div>
+
+    <!-- MENU PRINCIPAL -->
+    <div class="menu" id="mainMenu">
+        <!-- J'ai retiré "images/" des liens ci-dessous, car tout est à la racine -->
+        <button class="btn-action btn-hypo" onclick="action('hypo', 'sira.png', '🥵', 'Tu fais une hypoglycémie. Prends 3 sucres tout de suite et assieds-toi.')">
+            <span class="icon">🥵</span> Je me sens faible (Hypo)
+        </button>
+        <button class="btn-action btn-hyper" onclick="action('hyper', 'sira-eau.png', '🥤', 'Tu fais une hyperglycémie. Il faut boire beaucoup d eau et te reposer.')">
+            <span class="icon">🥤</span> J'ai très soif (Hyper)
+        </button>
+        <button class="btn-action" onclick="action('glycemie', 'sira-doigt.png', '🩸', 'Pour mesurer ta glycémie, pique sur le côté du doigt. C est moins douloureux.')">
+            <span class="icon">🩸</span> Ma glycémie
+        </button>
+        <button class="btn-action" onclick="action('collation', 'sira-pomme.png', '🍎', 'Pour une bonne collation, mange des arachides ou un fruit. Évite les jus.')">
+            <span class="icon">🍎</span> Une collation
+        </button>
+    </div>
+
+    <!-- ÉCRANS -->
+    <div id="hypo" class="screen">
+        <h2 style="color:var(--alert)">Hypoglycémie</h2>
+        <div class="step"><span>1</span> Prends <strong>3 morceaux de sucre</strong> ou bois un demi-verre de jus.</div>
+        <div class="timer-box">
+            <div class="timer" id="timer">15:00</div>
+            <button class="btn-start" id="startBtn" onclick="startTimer()">Lancer le chrono</button>
+        </div>
+        <div class="step"><span>2</span> Si tu te sens encore mal après 15 minutes, demande de l'aide.</div>
+        <button class="btn-close" onclick="closeScreen('👋🏾', 'Que puis-je faire d autre pour toi ?')">Fermer</button>
+    </div>
+
+    <div id="hyper" class="screen">
+        <h2 style="color:var(--blue)">Hyperglycémie</h2>
+        <div class="step"><span>1</span> Bois un grand verre d'eau. <strong>Pas de soda sucré</strong>.</div>
+        <div class="step"><span>2</span> Assieds-toi et repose-toi.</div>
+        <div class="step"><span>3</span> Si tu as des nausées, <strong>appelle à l'aide</strong>.</div>
+        <button class="btn-close" onclick="closeScreen('💧', 'N oublie pas de boire de l eau régulièrement.')">Fermer</button>
+    </div>
+
+    <div id="glycemie" class="screen">
+        <h2 style="color:var(--primary)">Prendre sa glycémie</h2>
+        <div class="step"><span>1</span> Lave-toi les mains et sèche-les bien.</div>
+        <div class="step"><span>2</span> Pique sur le <strong>côté</strong> du bout du doigt.</div>
+        <div class="step"><span>3</span> Dépose la goutte sur la bandelette.</div>
+        <div class="step"><span>4</span> Note le résultat dans ton carnet.</div>
+        <button class="btn-close" onclick="closeScreen('📝', 'C est bien de noter tes résultats pour ton médecin.')">J'ai compris</button>
+    </div>
+
+    <div id="collation" class="screen">
+        <h2 style="color:var(--accent)">Idées de collations</h2>
+        <div class="step"><span>✅</span> Une poignée d'arachides nature.</div>
+        <div class="step"><span>✅</span> Un fruit entier (pomme, orange).</div>
+        <div class="step"><span>❌</span> Évite les jus, les gâteaux et les sodas.</div>
+        <button class="btn-close" onclick="closeScreen('🍎', 'Mange sainement, tu te sentiras mieux !')">Merci Sira</button>
+    </div>
+
+    <audio id="audioPlayer"></audio>
+
+    <script>
+        const siraImg = document.getElementById('siraImg');
+        const siraBubble = document.getElementById('siraBubble');
+        const bubbleIcon = document.getElementById('bubbleIcon');
+        const bubbleText = document.getElementById('bubbleText');
+        const audioPlayer = document.getElementById('audioPlayer');
+
+        function playSira(icon, text, audioFile, imagePose) {
+            if(imagePose) siraImg.src = imagePose;
+
+            bubbleIcon.textContent = icon;
+            bubbleText.textContent = text;
+            
+            siraBubble.classList.remove('active');
+            void siraBubble.offsetWidth; 
+            siraBubble.classList.add('active');
+
+            audioPlayer.src = `audios/${audioFile}.mp3`;
+            audioPlayer.play().then(() => {
+                siraImg.classList.remove('repos');
+                siraImg.classList.add('parlant');
+            }).catch(e => console.log("Audio en attente d'interaction."));
+
+            audioPlayer.onended = () => {
+                siraImg.classList.remove('parlant');
+                siraImg.classList.add('repos');
+            };
+        }
+
+        function action(screenId, imagePose, icon, texteParle) {
+            document.getElementById('mainMenu').style.display = 'none';
+            siraBubble.style.display = 'none'; 
+            
+            siraImg.src = imagePose;
+
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            audioPlayer.src = `audios/${screenId}.mp3`;
+            audioPlayer.play().then(() => {
+                siraImg.classList.remove('repos');
+                siraImg.classList.add('parlant');
+            }).catch(e => console.log(e));
+            
+            audioPlayer.onended = () => {
+                siraImg.classList.remove('parlant');
+                siraImg.classList.add('repos');
+            };
+        }
+
+        function closeScreen(icon, text) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('mainMenu').style.display = 'flex';
+            
+            playSira(icon, text, 'retour', 'sira.png');
+        }
+
+        let timerInterval;
+        function startTimer() {
+            let timeLeft = 900;
+            const display = document.getElementById('timer');
+            const btn = document.getElementById('startBtn');
+            btn.style.display = 'none'; 
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                display.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    display.textContent = "C'est fini !";
+                    display.classList.add('finished');
+                    playSira('⏰', 'Le temps est écoulé. Si tu te sens encore mal, demande de l aide.', 'chrono_fini', 'sira.png');
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
