@@ -13,9 +13,7 @@
         body { margin: 0; background: var(--bg); color: var(--text); text-align: center; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
         
         /* --- SIRA ET SES ANIMATIONS --- */
-        .avatar-wrapper { position: relative; margin-bottom: 20px; width: 200px; height: 220px; display: flex; justify-content: center; align-items: center; z-index: 2; }
-        
-        /* Suppression du mix-blend-mode car vos images ont un fond transparent */
+        .avatar-wrapper { position: relative; margin-bottom: 20px; width: 180px; height: 200px; display: flex; justify-content: center; align-items: center; z-index: 2; }
         .sira-media { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s, opacity 0.3s; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.1)); }
         
         .sira-media.repos { animation: float 3s ease-in-out infinite; }
@@ -49,12 +47,28 @@
         .btn-hypo { border-color: var(--alert); box-shadow: 3px 3px 0px var(--alert); }
         .btn-hyper { border-color: var(--blue); box-shadow: 3px 3px 0px var(--blue); }
 
-        /* --- ÉCRANS DE DÉTAILS --- */
-        .screen { display: none; background: white; padding: 25px; border-radius: 24px; border: 3px solid var(--text); box-shadow: 6px 6px 0px var(--primary); text-align: left; width: 100%; max-width: 400px; position: absolute; top: 20px; z-index: 10; }
+        /* --- ÉCRANS DE DÉTAILS (CORRIGÉS) --- */
+        .screen { 
+            display: none; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 24px; 
+            border: 3px solid var(--text); 
+            box-shadow: 6px 6px 0px var(--primary); 
+            text-align: left; 
+            width: 100%; 
+            max-width: 400px; 
+            z-index: 10; 
+            /* SUPPRESSION de position: absolute et top: 20px */
+            margin-bottom: 20px;
+        }
         .screen.active { display: block; animation: slideUp 0.3s ease-out; }
-        .screen h2 { font-size: 1.5rem; margin-top: 0; text-align: center; color: var(--primary); text-transform: uppercase;}
+        .screen h2 { font-size: 1.4rem; margin-top: 0; text-align: center; color: var(--primary); text-transform: uppercase; margin-bottom: 20px;}
+        
+        /* Correction de l'affichage des étapes */
         .step { display: flex; align-items: flex-start; margin-bottom: 15px; background: var(--soft); padding: 15px; border-radius: 12px; font-size: 1rem; line-height: 1.4; color: var(--text); border: 1px solid #ddd; }
         .step span { font-size: 1.2rem; font-weight: bold; margin-right: 15px; color: white; background: var(--primary); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .step p { margin: 0; padding-top: 4px; } /* Ajout d'un style pour le texte */
         
         /* CHRONO */
         .timer-box { text-align: center; margin: 20px 0; background: #fff; padding: 20px; border-radius: 16px; border: 2px dashed var(--alert); }
@@ -76,7 +90,7 @@
 </head>
 <body>
 
-    <!-- L'IMAGE DE SIRA (à la racine) -->
+    <!-- L'IMAGE DE SIRA -->
     <div class="avatar-wrapper">
         <img src="sira.png" alt="Sira" class="sira-media repos" id="siraImg">
     </div>
@@ -89,7 +103,6 @@
 
     <!-- MENU PRINCIPAL -->
     <div class="menu" id="mainMenu">
-        <!-- J'ai retiré "images/" des liens ci-dessous, car tout est à la racine -->
         <button class="btn-action btn-hypo" onclick="action('hypo', 'sira.png', '🥵', 'Tu fais une hypoglycémie. Prends 3 sucres tout de suite et assieds-toi.')">
             <span class="icon">🥵</span> Je me sens faible (Hypo)
         </button>
@@ -107,37 +120,37 @@
     <!-- ÉCRANS -->
     <div id="hypo" class="screen">
         <h2 style="color:var(--alert)">Hypoglycémie</h2>
-        <div class="step"><span>1</span> Prends <strong>3 morceaux de sucre</strong> ou bois un demi-verre de jus.</div>
+        <div class="step"><span>1</span> <p>Prends <strong>3 morceaux de sucre</strong> ou bois un demi-verre de jus.</p></div>
         <div class="timer-box">
             <div class="timer" id="timer">15:00</div>
             <button class="btn-start" id="startBtn" onclick="startTimer()">Lancer le chrono</button>
         </div>
-        <div class="step"><span>2</span> Si tu te sens encore mal après 15 minutes, demande de l'aide.</div>
+        <div class="step"><span>2</span> <p>Si tu te sens encore mal après 15 minutes, demande de l'aide.</p></div>
         <button class="btn-close" onclick="closeScreen('👋🏾', 'Que puis-je faire d autre pour toi ?')">Fermer</button>
     </div>
 
     <div id="hyper" class="screen">
         <h2 style="color:var(--blue)">Hyperglycémie</h2>
-        <div class="step"><span>1</span> Bois un grand verre d'eau. <strong>Pas de soda sucré</strong>.</div>
-        <div class="step"><span>2</span> Assieds-toi et repose-toi.</div>
-        <div class="step"><span>3</span> Si tu as des nausées, <strong>appelle à l'aide</strong>.</div>
+        <div class="step"><span>1</span> <p>Bois un grand verre d'eau. <strong>Pas de soda sucré</strong>.</p></div>
+        <div class="step"><span>2</span> <p>Assieds-toi et repose-toi.</p></div>
+        <div class="step"><span>3</span> <p>Si tu as des nausées, <strong>appelle à l'aide</strong>.</p></div>
         <button class="btn-close" onclick="closeScreen('💧', 'N oublie pas de boire de l eau régulièrement.')">Fermer</button>
     </div>
 
     <div id="glycemie" class="screen">
         <h2 style="color:var(--primary)">Prendre sa glycémie</h2>
-        <div class="step"><span>1</span> Lave-toi les mains et sèche-les bien.</div>
-        <div class="step"><span>2</span> Pique sur le <strong>côté</strong> du bout du doigt.</div>
-        <div class="step"><span>3</span> Dépose la goutte sur la bandelette.</div>
-        <div class="step"><span>4</span> Note le résultat dans ton carnet.</div>
+        <div class="step"><span>1</span> <p>Lave-toi les mains et sèche-les bien.</p></div>
+        <div class="step"><span>2</span> <p>Pique sur le <strong>côté</strong> du bout du doigt.</p></div>
+        <div class="step"><span>3</span> <p>Dépose la goutte sur la bandelette.</p></div>
+        <div class="step"><span>4</span> <p>Note le résultat dans ton carnet.</p></div>
         <button class="btn-close" onclick="closeScreen('📝', 'C est bien de noter tes résultats pour ton médecin.')">J'ai compris</button>
     </div>
 
     <div id="collation" class="screen">
         <h2 style="color:var(--accent)">Idées de collations</h2>
-        <div class="step"><span>✅</span> Une poignée d'arachides nature.</div>
-        <div class="step"><span>✅</span> Un fruit entier (pomme, orange).</div>
-        <div class="step"><span>❌</span> Évite les jus, les gâteaux et les sodas.</div>
+        <div class="step"><span>✅</span> <p>Une poignée d'arachides nature.</p></div>
+        <div class="step"><span>✅</span> <p>Un fruit entier (pomme, orange).</p></div>
+        <div class="step"><span>❌</span> <p>Évite les jus, les gâteaux et les sodas.</p></div>
         <button class="btn-close" onclick="closeScreen('🍎', 'Mange sainement, tu te sentiras mieux !')">Merci Sira</button>
     </div>
 
@@ -164,7 +177,7 @@
             audioPlayer.play().then(() => {
                 siraImg.classList.remove('repos');
                 siraImg.classList.add('parlant');
-            }).catch(e => console.log("Audio en attente d'interaction."));
+            }).catch(e => console.log("Audio en attente."));
 
             audioPlayer.onended = () => {
                 siraImg.classList.remove('parlant');
