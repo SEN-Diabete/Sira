@@ -13,9 +13,10 @@
         body { margin: 0; background: var(--bg); color: var(--text); text-align: center; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
         
         /* --- SIRA ET SES ANIMATIONS --- */
-        .avatar-wrapper { position: relative; margin-bottom: 20px; width: 180px; height: 200px; display: flex; justify-content: center; align-items: center; z-index: 2; }
-        .sira-media { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s, opacity 0.3s; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.1)); }
+        .avatar-wrapper { position: relative; margin-bottom: 15px; width: 180px; height: 200px; transition: all 0.3s; display: flex; justify-content: center; align-items: center; }
+        .avatar-wrapper.small { width: 100px; height: 110px; margin-bottom: 5px; }
         
+        .sira-media { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s, opacity 0.3s; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.1)); }
         .sira-media.repos { animation: float 3s ease-in-out infinite; }
         .sira-media.parlant { animation: talk 0.5s ease-in-out infinite alternate; }
         
@@ -24,7 +25,7 @@
             background: white; padding: 20px; border-radius: 20px; position: relative; 
             max-width: 340px; font-size: 1.1rem; line-height: 1.5;
             border: 3px solid var(--text); box-shadow: 4px 4px 0px var(--primary);
-            margin-bottom: 25px; display: none; z-index: 1;
+            margin-bottom: 25px; display: none;
         }
         .speech-bubble-bd::after { content: ''; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); border-width: 0 15px 20px 15px; border-style: solid; border-color: transparent transparent var(--text) transparent; }
         .speech-bubble-bd::before { content: ''; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); border-width: 0 13px 17px 13px; border-style: solid; border-color: transparent transparent white transparent; z-index: 2; }
@@ -34,12 +35,12 @@
         .bubble-text { font-weight: bold; color: var(--text); }
 
         /* --- MENU DES ACTIONS --- */
-        .menu { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 12px; z-index: 0; }
+        .menu { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 12px; }
         .btn-action {
             background: white; border: 2px solid var(--text); padding: 15px 20px; border-radius: 16px;
             font-size: 1rem; font-weight: bold; color: var(--text); cursor: pointer;
             display: flex; align-items: center; gap: 15px; text-align: left; transition: all 0.1s;
-            box-shadow: 3px 3px 0px var(--text);
+            box-shadow: 3px 3px 0px var(--text); text-decoration: none;
         }
         .btn-action:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px var(--text); }
         .btn-action .icon { font-size: 1.5rem; background: var(--soft); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
@@ -47,61 +48,55 @@
         .btn-hypo { border-color: var(--alert); box-shadow: 3px 3px 0px var(--alert); }
         .btn-hyper { border-color: var(--blue); box-shadow: 3px 3px 0px var(--blue); }
 
-        /* --- ÉCRANS DE DÉTAILS (CORRIGÉS) --- */
-        .screen { 
-            display: none; 
-            background: white; 
-            padding: 25px; 
-            border-radius: 24px; 
-            border: 3px solid var(--text); 
-            box-shadow: 6px 6px 0px var(--primary); 
-            text-align: left; 
-            width: 100%; 
-            max-width: 400px; 
-            z-index: 10; 
-            /* SUPPRESSION de position: absolute et top: 20px */
-            margin-bottom: 20px;
+        /* --- NOUVEAU BOUTON CTA --- */
+        .btn-club {
+            margin-top: 10px; background: var(--primary); color: white; 
+            padding: 15px 20px; border-radius: 16px; border: 2px solid var(--text); 
+            box-shadow: 3px 3px 0px var(--text); text-decoration: none;
+            display: flex; align-items: center; gap: 15px; transition: all 0.1s;
         }
+        .btn-club:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px var(--text); }
+        .btn-club .icon { font-size: 1.5rem; background: rgba(255,255,255,0.2); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .btn-club-text { text-align: left; }
+        .btn-club-text strong { display: block; font-size: 1.1rem; }
+        .btn-club-text span { font-size: 0.85rem; opacity: 0.9; }
+
+        /* --- ÉCRANS DE DÉTAILS --- */
+        .screen { display: none; background: white; padding: 20px; border-radius: 20px; border: 3px solid var(--text); box-shadow: 6px 6px 0px var(--primary); text-align: left; width: 100%; max-width: 400px; position: static; margin-top: 10px; }
         .screen.active { display: block; animation: slideUp 0.3s ease-out; }
-        .screen h2 { font-size: 1.4rem; margin-top: 0; text-align: center; color: var(--primary); text-transform: uppercase; margin-bottom: 20px;}
+        .screen h2 { font-size: 1.3rem; margin-top: 0; text-align: center; color: var(--primary); text-transform: uppercase; margin-bottom: 15px;}
         
-        /* Correction de l'affichage des étapes */
-        .step { display: flex; align-items: flex-start; margin-bottom: 15px; background: var(--soft); padding: 15px; border-radius: 12px; font-size: 1rem; line-height: 1.4; color: var(--text); border: 1px solid #ddd; }
-        .step span { font-size: 1.2rem; font-weight: bold; margin-right: 15px; color: white; background: var(--primary); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .step p { margin: 0; padding-top: 4px; } /* Ajout d'un style pour le texte */
+        .step { display: flex; align-items: flex-start; margin-bottom: 12px; background: var(--soft); padding: 12px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; color: var(--text); border: 1px solid #ddd; }
+        .step span { font-size: 1.1rem; font-weight: bold; margin-right: 12px; color: white; background: var(--primary); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .step p { margin: 0; padding-top: 2px; }
         
-        /* CHRONO */
-        .timer-box { text-align: center; margin: 20px 0; background: #fff; padding: 20px; border-radius: 16px; border: 2px dashed var(--alert); }
-        .timer { font-size: 3.5rem; font-weight: 900; color: var(--alert); margin: 10px 0; font-variant-numeric: tabular-nums; }
+        .timer-box { text-align: center; margin: 15px 0; background: #fff; padding: 15px; border-radius: 16px; border: 2px dashed var(--alert); }
+        .timer { font-size: 3rem; font-weight: 900; color: var(--alert); margin: 10px 0; font-variant-numeric: tabular-nums; }
         .timer.finished { color: var(--blue); animation: pulse 1s infinite; }
-        .btn-start { background: var(--primary); color: white; border: 2px solid var(--text); padding: 15px; border-radius: 12px; width: 100%; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 3px 3px 0px var(--text); }
+        .btn-start { background: var(--primary); color: white; border: 2px solid var(--text); padding: 12px; border-radius: 12px; width: 100%; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 3px 3px 0px var(--text); }
         .btn-start:active { transform: translate(3px,3px); box-shadow: none; }
         
-        .btn-close { background: white; color: var(--text); border: 2px solid var(--text); padding: 15px; border-radius: 12px; width: 100%; font-size: 1rem; margin-top: 15px; font-weight: bold; cursor: pointer; box-shadow: 3px 3px 0px var(--text); }
+        .btn-close { background: white; color: var(--text); border: 2px solid var(--text); padding: 12px; border-radius: 12px; width: 100%; font-size: 1rem; margin-top: 10px; font-weight: bold; cursor: pointer; box-shadow: 3px 3px 0px var(--text); }
         .btn-close:active { transform: translate(3px,3px); box-shadow: none; }
 
-        /* --- ANIMATIONS CSS --- */
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
         @keyframes talk { 0% { transform: scale(1) rotate(-1deg); } 100% { transform: scale(1.03) rotate(1deg); } }
         @keyframes popIn { 0% { opacity: 0; transform: scale(0.8) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <!-- L'IMAGE DE SIRA -->
-    <div class="avatar-wrapper">
+    <div class="avatar-wrapper" id="siraWrapper">
         <img src="sira.png" alt="Sira" class="sira-media repos" id="siraImg">
     </div>
 
-    <!-- LA BULLE DE BD -->
     <div class="speech-bubble-bd active" id="siraBubble">
         <span class="bubble-icon" id="bubbleIcon">👋🏾</span>
         <span class="bubble-text" id="bubbleText">Bonjour ! Je suis Sira. Comment puis-je t'aider aujourd'hui ?</span>
     </div>
 
-    <!-- MENU PRINCIPAL -->
     <div class="menu" id="mainMenu">
         <button class="btn-action btn-hypo" onclick="action('hypo', 'sira.png', '🥵', 'Tu fais une hypoglycémie. Prends 3 sucres tout de suite et assieds-toi.')">
             <span class="icon">🥵</span> Je me sens faible (Hypo)
@@ -115,6 +110,15 @@
         <button class="btn-action" onclick="action('collation', 'sira-pomme.png', '🍎', 'Pour une bonne collation, mange des arachides ou un fruit. Évite les jus.')">
             <span class="icon">🍎</span> Une collation
         </button>
+
+        <!-- NOUVEAU CTA VERS LA LANDING PAGE -->
+        <a href="https://sen-diabete.github.io/Sira-Site/" class="btn-club" target="_blank">
+            <span class="icon">🤝</span>
+            <div class="btn-club-text">
+                <strong>Besoin d'aide au quotidien ?</strong>
+                <span>Rejoins le Club Séné Diabète (recettes, audios...)</span>
+            </div>
+        </a>
     </div>
 
     <!-- ÉCRANS -->
@@ -158,6 +162,7 @@
 
     <script>
         const siraImg = document.getElementById('siraImg');
+        const siraWrapper = document.getElementById('siraWrapper');
         const siraBubble = document.getElementById('siraBubble');
         const bubbleIcon = document.getElementById('bubbleIcon');
         const bubbleText = document.getElementById('bubbleText');
@@ -165,10 +170,8 @@
 
         function playSira(icon, text, audioFile, imagePose) {
             if(imagePose) siraImg.src = imagePose;
-
             bubbleIcon.textContent = icon;
             bubbleText.textContent = text;
-            
             siraBubble.classList.remove('active');
             void siraBubble.offsetWidth; 
             siraBubble.classList.add('active');
@@ -188,7 +191,7 @@
         function action(screenId, imagePose, icon, texteParle) {
             document.getElementById('mainMenu').style.display = 'none';
             siraBubble.style.display = 'none'; 
-            
+            siraWrapper.classList.add('small');
             siraImg.src = imagePose;
 
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -209,7 +212,7 @@
         function closeScreen(icon, text) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('mainMenu').style.display = 'flex';
-            
+            siraWrapper.classList.remove('small');
             playSira(icon, text, 'retour', 'sira.png');
         }
 
